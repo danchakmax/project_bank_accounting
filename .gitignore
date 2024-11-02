@@ -1,1 +1,13 @@
- 
+# Log files
+*.log
+
+# Environment configuration
+.env
+
+# Temporary and cache files
+*.tmp
+__pycache__/
+*.pyc
+
+# Third-party libraries
+venv/            # Virtual environment directory
