@@ -1,4 +1,4 @@
-from tkinter import messagebox
+from tkinter import messagebox, END
 import json
 
 class BankSystem:
@@ -86,3 +86,21 @@ class BankSystem:
         messagebox.showinfo("Success", "Account created successfully with a bonus of 100!")
 
         self.create_account_frame.pack_forget()
+
+        def login(self):
+            phone = self.login_phone_entry.get().strip()
+            pin = self.login_pin_entry.get().strip()
+
+            if not phone or not pin:
+                messagebox.showerror("Error", "Please enter both phone number and PIN!")
+                return
+
+            if phone in self.users and self.users[phone]["pin"] == pin:
+                self.current_user_data = self.users[phone]
+                self.login_phone_entry.delete(0, END)
+                self.login_pin_entry.delete(0, END)
+                self.login_frame.pack_forget()
+            else:
+                messagebox.showerror("Error", "Invalid phone number or PIN!")
+                self.login_pin_entry.delete(0, END)
+
