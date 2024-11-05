@@ -1,7 +1,16 @@
-from tkinter import messagebox, END
+from tkinter import messagebox
+from tkinter import *
 import json
 
 class BankSystem:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Bank Management System")
+        self.master.geometry("500x500")
+
+        self.users = self.load_data()
+        self.current_user_data = None
+
     def load_data(self):
         users = {}
         try:
