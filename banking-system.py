@@ -9,6 +9,7 @@ class BankSystem:
         self.master.geometry("500x500")
 
         self.users = self.load_data()
+        self.init_main_screen()
         self.current_user_data = None
 
     def load_data(self):
@@ -96,20 +97,29 @@ class BankSystem:
 
         self.create_account_frame.pack_forget()
 
-        def login(self):
-            phone = self.login_phone_entry.get().strip()
-            pin = self.login_pin_entry.get().strip()
+    def login(self):
+        phone = self.login_phone_entry.get().strip()
+        pin = self.login_pin_entry.get().strip()
 
-            if not phone or not pin:
-                messagebox.showerror("Error", "Please enter both phone number and PIN!")
-                return
+        if not phone or not pin:
+            messagebox.showerror("Error", "Please enter both phone number and PIN!")
+            return
 
-            if phone in self.users and self.users[phone]["pin"] == pin:
-                self.current_user_data = self.users[phone]
-                self.login_phone_entry.delete(0, END)
-                self.login_pin_entry.delete(0, END)
-                self.login_frame.pack_forget()
-            else:
-                messagebox.showerror("Error", "Invalid phone number or PIN!")
-                self.login_pin_entry.delete(0, END)
+        if phone in self.users and self.users[phone]["pin"] == pin:
+            self.current_user_data = self.users[phone]
+            self.login_phone_entry.delete(0, END)
+            self.login_pin_entry.delete(0, END)
+            self.login_frame.pack_forget()
+        else:
+            messagebox.showerror("Error", "Invalid phone number or PIN!")
+            self.login_pin_entry.delete(0, END)
+
+    def init_main_screen(self):
+        self.main_screen_frame = Frame(self.master)
+        self.main_screen_frame.pack(pady=50)
+
+        Label(self.main_screen_frame, text="Bank Management System", font=("Arial", 16)).pack(pady=20)
+
+        Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',)
+        Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',)
 
