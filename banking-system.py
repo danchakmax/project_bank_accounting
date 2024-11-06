@@ -123,3 +123,13 @@ class BankSystem:
         Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',)
         Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',)
 
+    def go_back_to_main(self):
+        if hasattr(self, 'create_account_frame'):
+            self.create_account_frame.pack_forget()
+        if hasattr(self, 'login_frame'):
+            self.login_frame.pack_forget()
+        if hasattr(self, 'user_details_frame'):
+            self.user_details_frame.pack_forget()
+
+        self.init_main_screen()
+
