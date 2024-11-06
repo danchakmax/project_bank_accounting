@@ -133,3 +133,20 @@ class BankSystem:
 
         self.init_main_screen()
 
+    def show_login(self):
+        self.main_screen_frame.pack_forget()
+
+        self.login_frame = Frame(self.master, bg="#FFFFFF")
+        self.login_frame.pack(pady=20)
+
+        Label(self.login_frame, text="Phone:", font=("Arial", 14), bg="#FFFFFF").grid(row=0, column=0, padx=10, pady=10)
+        self.login_phone_entry = Entry(self.login_frame, font=("Arial", 14))
+        self.login_phone_entry.grid(row=0, column=1, padx=10, pady=10)
+        Label(self.login_frame, text="PIN:", font=("Arial", 14), bg="#FFFFFF").grid(row=1, column=0, padx=10, pady=10)
+        self.login_pin_entry = Entry(self.login_frame, show="*", font=("Arial", 14))
+        self.login_pin_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        Button(self.login_frame, text="Login", font=('Arial', 12), bg='#C2E7B1', fg='#FFFFFF', command=self.login).grid(
+            row=2, column=1, pady=10)
+        Button(self.login_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=2, column=0,
+                                                                                                     pady=10)
