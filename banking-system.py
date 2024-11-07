@@ -1,4 +1,5 @@
 from tkinter import messagebox
+from datetime import datetime
 from tkinter import *
 import json
 
@@ -150,3 +151,16 @@ class BankSystem:
             row=2, column=1, pady=10)
         Button(self.login_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=2, column=0,
                                                                                                      pady=10)
+
+    def timestamp_decorator(action_description):
+        def decorator(func):
+            def wrapper(self, *args, **kwargs):
+                result = func(self, *args, **kwargs)
+                if self.current_user_data:
+                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+                    self.current_user_data["transactions"].append(f"{timestamp} - {action_description}")
+                return result
+
+            return wrapper
+
+        return decorator
