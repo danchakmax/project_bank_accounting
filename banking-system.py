@@ -1,4 +1,4 @@
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from datetime import datetime
 from tkinter import *
 import json
@@ -31,7 +31,6 @@ class BankSystem:
             for user_data in self.users.values():
                 json.dump(user_data, file)
                 file.write("\n")
-
 
 
     def is_valid_phone(self, value):
@@ -164,7 +163,26 @@ class BankSystem:
             return wrapper
 
         return decorator
-    
+
+    def change_phone_number(self):
+        new_phone = simpledialog.askstring("Change Phone Number", "Enter new phone number:")
+
+        if not new_phone or not self.is_valid_phone(new_phone):
+            messagebox.showerror("Error", "Invalid phone number format!")
+            return
+
+        if new_phone in self.users:
+            messagebox.showerror("Error", "Phone number is already associated with another account!")
+            return
+
+        old_phone = self.current_user_data["phone"]
+        self.users[new_phone] = self.users.pop(old_phone)
+        self.users[new_phone]["phone"] = new_phone
+        self.save_data()
+
+        messagebox.showinfo("Success", f"Phone number changed to {new_phone} successfully!")
+        self.show_user_details()
+
     def show_user_details(self):
         if hasattr(self, 'user_details_frame'):
             self.user_details_frame.pack_forget()
@@ -178,3 +196,5 @@ class BankSystem:
               bg="#D3D3D3").pack(pady=5)
         Label(self.user_details_frame, text=f"Loan Amount: {self.current_user_data.get('loan_amount', 0):.2f}",
               font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
+
+
