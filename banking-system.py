@@ -164,3 +164,17 @@ class BankSystem:
             return wrapper
 
         return decorator
+    
+    def show_user_details(self):
+        if hasattr(self, 'user_details_frame'):
+            self.user_details_frame.pack_forget()
+
+        self.user_details_frame = Frame(self.master, bg="#D3D3D3", padx=20, pady=20)
+        self.user_details_frame.pack(pady=20)
+
+        Label(self.user_details_frame, text=f"Name: {self.current_user_data['name']}", font=('Arial', 14),
+              bg="#D3D3D3").pack()
+        Label(self.user_details_frame, text=f"Balance: {self.current_user_data['balance']}", font=('Arial', 14),
+              bg="#D3D3D3").pack(pady=5)
+        Label(self.user_details_frame, text=f"Loan Amount: {self.current_user_data.get('loan_amount', 0):.2f}",
+              font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
