@@ -183,6 +183,59 @@ class BankSystem:
         messagebox.showinfo("Success", f"Phone number changed to {new_phone} successfully!")
         self.show_user_details()
 
+    def change_password(self):
+        new_pin = self.new_pin_entry.get().strip()
+        confirm_new_pin = self.confirm_new_pin_entry.get().strip()
+
+        if not new_pin.isdigit() or len(new_pin) != 4:
+            messagebox.showerror("Error", "PIN must consist of 4 digits!")
+            return
+
+        if new_pin != confirm_new_pin:
+            messagebox.showerror("Error", "PIN codes do not match!")
+            return
+
+        if new_pin == self.current_user_data['pin']:
+            messagebox.showerror("Error", "The new PIN code must be different from the old one!")
+            return
+
+        self.current_user_data['pin'] = new_pin
+        self.save_data()
+        messagebox.showinfo("Success", "PIN code successfully changed!")
+
+        self.change_password_frame.pack_forget()
+        self.show_user_details()
+
+    def back_to_user_details(self):
+        self.change_password_frame.pack_forget()
+        self.show_user_details()
+        
+    def show_change_password(self):
+        self.user_details_frame.pack_forget()
+
+        self.change_password_frame = Frame(self.master, bg="#FFFFFF")
+        self.change_password_frame.pack(pady=20)
+
+        Label(self.change_password_frame, text="New PIN:", font=("Arial", 14), bg="#FFFFFF").grid(row=0, column=0,
+                                                                                                  padx=10,
+                                                                                                  pady=10)
+        self.new_pin_entry = Entry(self.change_password_frame, show="*", font=("Arial", 14))
+        self.new_pin_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        Label(self.change_password_frame, text="Confirm new PIN:", font=("Arial", 14), bg="#FFFFFF").grid(row=1,
+                                                                                                          column=0,
+                                                                                                          padx=10,
+                                                                                                          pady=10)
+        self.confirm_new_pin_entry = Entry(self.change_password_frame, show="*", font=("Arial", 14))
+        self.confirm_new_pin_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        Button(self.change_password_frame, text="Save", font=('Arial', 12), bg='#C2E7B1', fg='#FFFFFF',
+               command=self.change_password).grid(row=2, column=1, pady=10)
+        Button(self.change_password_frame, text="Back", font=('Arial', 12), command=self.back_to_user_details).grid(
+            row=2,
+            column=0,
+            pady=10)
+
     def show_user_details(self):
         if hasattr(self, 'user_details_frame'):
             self.user_details_frame.pack_forget()
