@@ -256,6 +256,11 @@ class UserInterface:
         Label(self.user_details_frame, text=f"Loan Amount: {self.current_user_data.get('loan_amount', 0):.2f}",
               font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
 
+        Button(self.user_details_frame, text="Change Phone Number", font=('Arial', 12), bg='#FFDDC1',
+               command=self.change_phone_number).pack(pady=5)
+        Button(self.user_details_frame, text="Change PIN", font=('Arial', 12), bg='#FFDDC1',
+               command=self.show_change_password).pack(pady=5)
+        Button(self.user_details_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
 
     def show_create_account(self):
         self.clear_screen()
