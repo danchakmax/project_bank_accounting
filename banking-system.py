@@ -2,18 +2,14 @@ from tkinter import messagebox, simpledialog
 from datetime import datetime
 from tkinter import *
 import json
+from admin_interface import AdminInterface
 
-class BankSystem:
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Bank Management System")
-        self.master.geometry("500x500")
-
+class UserManager:
+    def __init__(self, file_path="bank_data.jsonl"):
+        self.file_path = file_path
         self.users = self.load_data()
-        self.init_main_screen()
-        self.current_user_data = None
-
-    def load_data(self):
+    @staticmethod
+    def load_data():
         users = {}
         try:
             with open("bank_data.jsonl", "r") as file:
@@ -24,7 +20,6 @@ class BankSystem:
             pass
         return users
 
-
     def save_data(self):
 
         with open("bank_data.jsonl", "w") as file:
@@ -32,17 +27,25 @@ class BankSystem:
                 json.dump(user_data, file)
                 file.write("\n")
 
+class UserInterface:
+    def __init__(self, master, user_manager, bank_system):
+        self.master = master
+        self.user_manager = user_manager
+        self.bank_system = bank_system
 
-    def is_valid_phone(self, value):
+    @staticmethod
+    def is_valid_phone(value):
         if (value.startswith('+380') and len(value) == 13 and value[4:].isdigit()) or \
                 (value.startswith('0') and len(value) == 10 and value.isdigit()):
             return True
         return False
 
-    def is_positive_integer(self, value):
+    @staticmethod
+    def is_positive_integer( value):
         return value.isdigit() and int(value) > 0
 
-    def check_age(self, age):
+    @staticmethod
+    def check_age( age):
         return int(age) >= 18
 
     def create_account(self):
@@ -78,11 +81,11 @@ class BankSystem:
             messagebox.showerror("Error", "PIN codes do not match!")
             return
 
-        if phone in self.users:
+        if phone in self.user_manager.users:
             messagebox.showerror("Error", "Account with this phone number already exists!")
             return
 
-        self.users[phone] = {
+        self.user_manager.users[phone] = {
             'name': name,
             'phone': phone,
             'age': int(age),
@@ -92,10 +95,11 @@ class BankSystem:
             'loan_amount': 0,
             'transactions': ["Account created with initial bonus: +100"]
         }
-        self.save_data()
+        self.user_manager.save_data()
         messagebox.showinfo("Success", "Account created successfully with a bonus of 100!")
 
         self.create_account_frame.pack_forget()
+        self.bank_system.init_main_screen()
 
     def login(self):
         phone = self.login_phone_entry.get().strip()
@@ -109,33 +113,21 @@ class BankSystem:
             messagebox.showerror("Error", "Please enter your PIN!")
             self.login_pin_entry.delete(0, END)
             return
-        if phone not in self.users:
+        if phone not in self.user_manager.users:
             messagebox.showerror("Error", "Account with this phone number does not exist!")
             self.login_phone_entry.delete(0, END)
             self.login_pin_entry.delete(0, END)
             return
-        if self.users[phone]["pin"] != pin:
+        if self.user_manager.users[phone]["pin"] != pin:
             messagebox.showerror("Error", "Incorrect PIN!")
             self.login_pin_entry.delete(0, END)
             return
         else:
-            self.current_user_data = self.users[phone]
+            self.current_user_data = self.user_manager.users[phone]
             self.login_phone_entry.delete(0, END)
             self.login_pin_entry.delete(0, END)
             self.login_frame.pack_forget()
             self.show_user_details()
-
-
-    def init_main_screen(self):
-        self.main_screen_frame = Frame(self.master)
-        self.main_screen_frame.pack(pady=50)
-
-        Label(self.main_screen_frame, text="Bank Management System", font=("Arial", 16)).pack(pady=20)
-
-        Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
-               command=self.show_create_account).pack(pady=10)
-        Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
-               command=self.show_login).pack(pady=10)
 
     def go_back_to_main(self):
         if hasattr(self, 'create_account_frame'):
@@ -145,10 +137,10 @@ class BankSystem:
         if hasattr(self, 'user_details_frame'):
             self.user_details_frame.pack_forget()
 
-        self.init_main_screen()
+        self.bank_system.init_main_screen()
 
     def show_login(self):
-        self.main_screen_frame.pack_forget()
+        self.clear_screen()
 
         self.login_frame = Frame(self.master, bg="#FFFFFF")
         self.login_frame.pack(pady=20)
@@ -185,14 +177,14 @@ class BankSystem:
             messagebox.showerror("Error", "Invalid phone number format!")
             return
 
-        if new_phone in self.users:
+        if new_phone in self.user_manager.users:
             messagebox.showerror("Error", "Phone number is already associated with another account!")
             return
 
         old_phone = self.current_user_data["phone"]
-        self.users[new_phone] = self.users.pop(old_phone)
-        self.users[new_phone]["phone"] = new_phone
-        self.save_data()
+        self.user_manager.users[new_phone] = self.user_manager.users.pop(old_phone)
+        self.user_manager.users[new_phone]["phone"] = new_phone
+        self.user_manager.save_data()
 
         messagebox.showinfo("Success", f"Phone number changed to {new_phone} successfully!")
         self.show_user_details()
@@ -214,7 +206,7 @@ class BankSystem:
             return
 
         self.current_user_data['pin'] = new_pin
-        self.save_data()
+        self.user_manager.save_data()
         messagebox.showinfo("Success", "PIN code successfully changed!")
 
         self.change_password_frame.pack_forget()
@@ -223,7 +215,7 @@ class BankSystem:
     def back_to_user_details(self):
         self.change_password_frame.pack_forget()
         self.show_user_details()
-        
+
     def show_change_password(self):
         self.user_details_frame.pack_forget()
 
@@ -265,9 +257,8 @@ class BankSystem:
               font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
 
 
-
     def show_create_account(self):
-        self.main_screen_frame.pack_forget()
+        self.clear_screen()
 
         self.create_account_frame = Frame(self.master, bg='#F0F0F0')
         self.create_account_frame.pack(pady=20)
@@ -295,8 +286,40 @@ class BankSystem:
         Button(self.create_account_frame, text="Create Account", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.create_account).grid(row=6, column=1, pady=20)
         Button(self.create_account_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=6, column=0, pady=20)
 
+    def clear_screen(self):
+        for widget in self.master.winfo_children():
+            widget.pack_forget()
 
 
+class BankSystem:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Bank Management System")
+        self.master.geometry("500x500")
+
+        self.user_manager = UserManager()
+        self.user_interface = UserInterface(master, self.user_manager, self)
+        self.admin_interface = AdminInterface(self, self.user_manager)
+
+        self.init_main_screen()
+
+    def init_main_screen(self):
+        self.clear_screen()
+        self.main_screen_frame = Frame(self.master, bg="#FFFFFF", padx=20, pady=20)
+        self.main_screen_frame.pack(pady=20)
+
+        Label(self.main_screen_frame, text="Bank Management System", font=("Arial", 16), bg="#FFFFFF").pack(pady=10)
+
+        Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
+               command=self.user_interface.show_create_account).pack(pady=10)
+        Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
+               command=self.user_interface.show_login).pack(pady=10)
+        Button(self.main_screen_frame, text="Admin Login", font=('Arial', 14), bg='#FF5733', fg='#FFFFFF',
+               command=self.admin_interface.show_admin_login).pack(pady=10)
+
+    def clear_screen(self):
+        for widget in self.master.winfo_children():
+            widget.pack_forget()
 
 def main():
     root = Tk()
