@@ -251,3 +251,35 @@ class BankSystem:
               font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
 
 
+
+    def show_create_account(self):
+        self.main_screen_frame.pack_forget()
+
+        self.create_account_frame = Frame(self.master, bg='#F0F0F0')
+        self.create_account_frame.pack(pady=20)
+
+        Label(self.create_account_frame, text="Name:", font=('Arial', 12), bg='#F0F0F0').grid(row=0, column=0, padx=10, pady=10)
+        Label(self.create_account_frame, text="Phone:", font=('Arial', 12), bg='#F0F0F0').grid(row=1, column=0, padx=10, pady=10)
+        Label(self.create_account_frame, text="Age:", font=('Arial', 12), bg='#F0F0F0').grid(row=2, column=0, padx=10, pady=10)
+        Label(self.create_account_frame, text="Salary:", font=('Arial', 12), bg='#F0F0F0').grid(row=3, column=0,padx=10, pady=10)
+        Label(self.create_account_frame, text="PIN:", font=('Arial', 12), bg='#F0F0F0').grid(row=4, column=0, padx=10, pady=10)
+        Label(self.create_account_frame, text="Confirm PIN:", font=('Arial', 12), bg='#F0F0F0').grid(row=5, column=0, padx=10, pady=10)
+
+        self.name_entry = Entry(self.create_account_frame, font=('Arial', 12))
+        self.name_entry.grid(row=0, column=1, padx=10, pady=10)
+        self.phone_entry = Entry(self.create_account_frame, font=('Arial', 12))
+        self.phone_entry.grid(row=1, column=1, padx=10, pady=10)
+        self.age_entry = Entry(self.create_account_frame, font=('Arial', 12))
+        self.age_entry.grid(row=2, column=1, padx=10, pady=10)
+        self.salary_entry = Entry(self.create_account_frame, font=('Arial', 12))
+        self.salary_entry.grid(row=3, column=1, padx=10, pady=10)
+        self.pin_entry = Entry(self.create_account_frame, show="*", font=('Arial', 12))
+        self.pin_entry.grid(row=4, column=1, padx=10, pady=10)
+        self.confirm_pin_entry = Entry(self.create_account_frame, show="*", font=('Arial', 12))
+        self.confirm_pin_entry.grid(row=5, column=1, padx=10, pady=10)
+
+        Button(self.create_account_frame, text="Create Account", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.create_account).grid(row=6, column=1, pady=20)
+        Button(self.create_account_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=6, column=0, pady=20)
+
+
+
