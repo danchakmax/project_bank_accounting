@@ -1,4 +1,4 @@
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from datetime import datetime
 from tkinter import *
 import json
@@ -31,7 +31,6 @@ class BankSystem:
             for user_data in self.users.values():
                 json.dump(user_data, file)
                 file.write("\n")
-
 
 
     def is_valid_phone(self, value):
@@ -121,8 +120,10 @@ class BankSystem:
 
         Label(self.main_screen_frame, text="Bank Management System", font=("Arial", 16)).pack(pady=20)
 
-        Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',)
-        Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',)
+        Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
+               command=self.show_create_account).pack(pady=10)
+        Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
+               command=self.show_login).pack(pady=10)
 
     def go_back_to_main(self):
         if hasattr(self, 'create_account_frame'):
@@ -147,7 +148,7 @@ class BankSystem:
         self.login_pin_entry = Entry(self.login_frame, show="*", font=("Arial", 14))
         self.login_pin_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        Button(self.login_frame, text="Login", font=('Arial', 12), bg='#C2E7B1', fg='#FFFFFF', command=self.login).grid(
+        Button(self.login_frame, text="Login", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.login).grid(
             row=2, column=1, pady=10)
         Button(self.login_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=2, column=0,
                                                                                                      pady=10)
@@ -164,7 +165,79 @@ class BankSystem:
             return wrapper
 
         return decorator
-    
+
+    def change_phone_number(self):
+        new_phone = simpledialog.askstring("Change Phone Number", "Enter new phone number:")
+
+        if not new_phone or not self.is_valid_phone(new_phone):
+            messagebox.showerror("Error", "Invalid phone number format!")
+            return
+
+        if new_phone in self.users:
+            messagebox.showerror("Error", "Phone number is already associated with another account!")
+            return
+
+        old_phone = self.current_user_data["phone"]
+        self.users[new_phone] = self.users.pop(old_phone)
+        self.users[new_phone]["phone"] = new_phone
+        self.save_data()
+
+        messagebox.showinfo("Success", f"Phone number changed to {new_phone} successfully!")
+        self.show_user_details()
+
+    def change_password(self):
+        new_pin = self.new_pin_entry.get().strip()
+        confirm_new_pin = self.confirm_new_pin_entry.get().strip()
+
+        if not new_pin.isdigit() or len(new_pin) != 4:
+            messagebox.showerror("Error", "PIN must consist of 4 digits!")
+            return
+
+        if new_pin != confirm_new_pin:
+            messagebox.showerror("Error", "PIN codes do not match!")
+            return
+
+        if new_pin == self.current_user_data['pin']:
+            messagebox.showerror("Error", "The new PIN code must be different from the old one!")
+            return
+
+        self.current_user_data['pin'] = new_pin
+        self.save_data()
+        messagebox.showinfo("Success", "PIN code successfully changed!")
+
+        self.change_password_frame.pack_forget()
+        self.show_user_details()
+
+    def back_to_user_details(self):
+        self.change_password_frame.pack_forget()
+        self.show_user_details()
+        
+    def show_change_password(self):
+        self.user_details_frame.pack_forget()
+
+        self.change_password_frame = Frame(self.master, bg="#FFFFFF")
+        self.change_password_frame.pack(pady=20)
+
+        Label(self.change_password_frame, text="New PIN:", font=("Arial", 14), bg="#FFFFFF").grid(row=0, column=0,
+                                                                                                  padx=10,
+                                                                                                  pady=10)
+        self.new_pin_entry = Entry(self.change_password_frame, show="*", font=("Arial", 14))
+        self.new_pin_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        Label(self.change_password_frame, text="Confirm new PIN:", font=("Arial", 14), bg="#FFFFFF").grid(row=1,
+                                                                                                          column=0,
+                                                                                                          padx=10,
+                                                                                                          pady=10)
+        self.confirm_new_pin_entry = Entry(self.change_password_frame, show="*", font=("Arial", 14))
+        self.confirm_new_pin_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        Button(self.change_password_frame, text="Save", font=('Arial', 12), bg='#C2E7B1', fg='#FFFFFF',
+               command=self.change_password).grid(row=2, column=1, pady=10)
+        Button(self.change_password_frame, text="Back", font=('Arial', 12), command=self.back_to_user_details).grid(
+            row=2,
+            column=0,
+            pady=10)
+
     def show_user_details(self):
         if hasattr(self, 'user_details_frame'):
             self.user_details_frame.pack_forget()
@@ -178,3 +251,45 @@ class BankSystem:
               bg="#D3D3D3").pack(pady=5)
         Label(self.user_details_frame, text=f"Loan Amount: {self.current_user_data.get('loan_amount', 0):.2f}",
               font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
+
+
+
+    def show_create_account(self):
+        self.main_screen_frame.pack_forget()
+
+        self.create_account_frame = Frame(self.master, bg='#F0F0F0')
+        self.create_account_frame.pack(pady=20)
+
+        Label(self.create_account_frame, text="Name:", font=('Arial', 12), bg='#F0F0F0').grid(row=0, column=0, padx=10, pady=10)
+        Label(self.create_account_frame, text="Phone:", font=('Arial', 12), bg='#F0F0F0').grid(row=1, column=0, padx=10, pady=10)
+        Label(self.create_account_frame, text="Age:", font=('Arial', 12), bg='#F0F0F0').grid(row=2, column=0, padx=10, pady=10)
+        Label(self.create_account_frame, text="Salary:", font=('Arial', 12), bg='#F0F0F0').grid(row=3, column=0,padx=10, pady=10)
+        Label(self.create_account_frame, text="PIN:", font=('Arial', 12), bg='#F0F0F0').grid(row=4, column=0, padx=10, pady=10)
+        Label(self.create_account_frame, text="Confirm PIN:", font=('Arial', 12), bg='#F0F0F0').grid(row=5, column=0, padx=10, pady=10)
+
+        self.name_entry = Entry(self.create_account_frame, font=('Arial', 12))
+        self.name_entry.grid(row=0, column=1, padx=10, pady=10)
+        self.phone_entry = Entry(self.create_account_frame, font=('Arial', 12))
+        self.phone_entry.grid(row=1, column=1, padx=10, pady=10)
+        self.age_entry = Entry(self.create_account_frame, font=('Arial', 12))
+        self.age_entry.grid(row=2, column=1, padx=10, pady=10)
+        self.salary_entry = Entry(self.create_account_frame, font=('Arial', 12))
+        self.salary_entry.grid(row=3, column=1, padx=10, pady=10)
+        self.pin_entry = Entry(self.create_account_frame, show="*", font=('Arial', 12))
+        self.pin_entry.grid(row=4, column=1, padx=10, pady=10)
+        self.confirm_pin_entry = Entry(self.create_account_frame, show="*", font=('Arial', 12))
+        self.confirm_pin_entry.grid(row=5, column=1, padx=10, pady=10)
+
+        Button(self.create_account_frame, text="Create Account", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.create_account).grid(row=6, column=1, pady=20)
+        Button(self.create_account_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=6, column=0, pady=20)
+
+
+
+
+def main():
+    root = Tk()
+    bank_system = BankSystem(root)
+    root.mainloop()
+
+if __name__ == '__main__':
+    main()
