@@ -120,8 +120,10 @@ class BankSystem:
 
         Label(self.main_screen_frame, text="Bank Management System", font=("Arial", 16)).pack(pady=20)
 
-        Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',)
-        Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',)
+        Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
+               command=self.show_create_account).pack(pady=10)
+        Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
+               command=self.show_login).pack(pady=10)
 
     def go_back_to_main(self):
         if hasattr(self, 'create_account_frame'):
@@ -146,7 +148,7 @@ class BankSystem:
         self.login_pin_entry = Entry(self.login_frame, show="*", font=("Arial", 14))
         self.login_pin_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        Button(self.login_frame, text="Login", font=('Arial', 12), bg='#C2E7B1', fg='#FFFFFF', command=self.login).grid(
+        Button(self.login_frame, text="Login", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.login).grid(
             row=2, column=1, pady=10)
         Button(self.login_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=2, column=0,
                                                                                                      pady=10)
@@ -283,3 +285,11 @@ class BankSystem:
 
 
 
+
+def main():
+    root = Tk()
+    bank_system = BankSystem(root)
+    root.mainloop()
+
+if __name__ == '__main__':
+    main()
