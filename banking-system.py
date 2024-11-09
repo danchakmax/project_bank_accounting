@@ -101,18 +101,30 @@ class BankSystem:
         phone = self.login_phone_entry.get().strip()
         pin = self.login_pin_entry.get().strip()
 
-        if not phone or not pin:
-            messagebox.showerror("Error", "Please enter both phone number and PIN!")
+        if not phone:
+            messagebox.showerror("Error", "Please enter your phone number!")
+            self.login_phone_entry.delete(0, END)
             return
-
-        if phone in self.users and self.users[phone]["pin"] == pin:
+        if not pin:
+            messagebox.showerror("Error", "Please enter your PIN!")
+            self.login_pin_entry.delete(0, END)
+            return
+        if phone not in self.users:
+            messagebox.showerror("Error", "Account with this phone number does not exist!")
+            self.login_phone_entry.delete(0, END)
+            self.login_pin_entry.delete(0, END)
+            return
+        if self.users[phone]["pin"] != pin:
+            messagebox.showerror("Error", "Incorrect PIN!")
+            self.login_pin_entry.delete(0, END)
+            return
+        else:
             self.current_user_data = self.users[phone]
             self.login_phone_entry.delete(0, END)
             self.login_pin_entry.delete(0, END)
             self.login_frame.pack_forget()
-        else:
-            messagebox.showerror("Error", "Invalid phone number or PIN!")
-            self.login_pin_entry.delete(0, END)
+            self.show_user_details()
+
 
     def init_main_screen(self):
         self.main_screen_frame = Frame(self.master)
