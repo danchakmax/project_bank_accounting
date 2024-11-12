@@ -1,5 +1,5 @@
 from tkinter import messagebox, simpledialog
-from datetime import datetime
+from datetime import datetime, timedelta
 from tkinter import *
 import json
 from admin_interface import AdminInterface
@@ -260,7 +260,11 @@ class UserInterface:
                command=self.change_phone_number).pack(pady=5)
         Button(self.user_details_frame, text="Change PIN", font=('Arial', 12), bg='#FFDDC1',
                command=self.show_change_password).pack(pady=5)
+        Button(self.user_details_frame, text="Apply for Loan", command=self.apply_for_loan).pack(
+            pady=5)
+        Button(self.user_details_frame, text="Repay Loan", command=self.repay_loan).pack(pady=5)
         Button(self.user_details_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
+
 
     def show_create_account(self):
         self.clear_screen()
@@ -294,6 +298,103 @@ class UserInterface:
     def clear_screen(self):
         for widget in self.master.winfo_children():
             widget.pack_forget()
+
+    def apply_for_loan(self):
+
+        if self.current_user_data.get("loan_amount", 0) > 0:
+            messagebox.showerror("Loan Denied",
+                                 "You already have an active loan. Please repay it before applying for a new one.")
+            return
+
+        max_loan_amount = int(self.current_user_data["salary"])
+        loan_amount = simpledialog.askinteger("Loan Application", f"Enter loan amount (Max {max_loan_amount}):")
+
+        if loan_amount is None or loan_amount <= 0:
+            messagebox.showerror("Error", "Invalid loan amount!")
+            return
+
+        if loan_amount > max_loan_amount:
+            messagebox.showerror("Loan Denied", f"Loan amount exceeds limit! Maximum loan amount is {max_loan_amount}.")
+            return
+
+        loan_term_days = simpledialog.askinteger("Loan Term", "Enter loan term in days (e.g., 7, 14, 30):",
+                                                 initialvalue=7)
+        if loan_term_days not in [7, 14, 30]:
+            messagebox.showerror("Error", "Invalid loan term! Unfortunately, we do not have such a credit plan.")
+            return
+
+        interest_rate = 1.01 if loan_term_days == 7 else 1.03 if loan_term_days == 14 else 1.05
+
+        self.current_user_data["loan_amount"] = loan_amount
+        self.current_user_data["balance"] += loan_amount
+        self.current_user_data["loan_start_date"] = datetime.now().strftime("%Y-%m-%d")
+        self.current_user_data["loan_due_date"] = (datetime.now() + timedelta(days=loan_term_days)).strftime("%Y-%m-%d")
+        self.current_user_data["interest_rate"] = interest_rate
+        self.current_user_data["transactions"].append(f"Loan granted: +{loan_amount}")
+
+        self.user_manager.save_data()
+        messagebox.showinfo("Success", f"Loan of {loan_amount} granted successfully!")
+        self.show_user_details()
+
+    def repay_loan(self):
+        loan_amount = self.current_user_data.get("loan_amount", 0)
+        if loan_amount <= 0:
+            messagebox.showinfo("No Active Loan", "You have no active loan to repay.")
+            return
+
+        amount_to_repay = simpledialog.askinteger("Repay Loan",
+                                                  f"Enter amount to repay (Outstanding loan: {loan_amount}):")
+        if amount_to_repay is None:
+            return
+
+        if amount_to_repay <= 0:
+            messagebox.showerror("Error", "The repayment amount must be positive!")
+            return
+
+        if amount_to_repay > self.current_user_data["balance"]:
+            messagebox.showerror("Error", "Insufficient funds to make this repayment.")
+            return
+
+        if amount_to_repay >= loan_amount:
+            self.current_user_data["balance"] -= loan_amount
+            self.current_user_data["loan_amount"] = 0
+            self.current_user_data["transactions"].append(f"Loan fully repaid: -{loan_amount}")
+            messagebox.showinfo("Loan Repayment", "Your loan has been fully repaid!")
+        else:
+            self.current_user_data["balance"] -= amount_to_repay
+            self.current_user_data["loan_amount"] -= amount_to_repay
+            self.current_user_data["transactions"].append(f"Partial loan repayment: -{amount_to_repay}")
+            messagebox.showinfo("Loan Repayment", f"Paid {amount_to_repay} towards loan.")
+
+        self.user_manager.save_data()
+        self.show_user_details()
+
+    def update_loan_interest(self):
+
+        loan_amount = self.current_user_data.get("loan_amount", 0)
+        if loan_amount <= 0:
+            return
+
+        loan_start_date = datetime.strptime(self.current_user_data["loan_start_date"], "%Y-%m-%d")
+        loan_due_date = datetime.strptime(self.current_user_data["loan_due_date"], "%Y-%m-%d")
+        current_date = datetime.now()
+
+        is_overdue = current_date > loan_due_date
+        overdue_days = (current_date - loan_due_date).days if is_overdue else 0
+        days_since_start = (current_date - loan_start_date).days
+
+        interest_rate = self.current_user_data.get("interest_rate", 1.01)
+
+        updated_loan_amount = loan_amount * (interest_rate ** days_since_start)
+
+        if is_overdue:
+            penalty_rate = 1.1
+            updated_loan_amount *= penalty_rate ** overdue_days
+            self.current_user_data["transactions"].append(f"Penalty added for {overdue_days} overdue days.")
+
+        self.current_user_data["loan_amount"] = round(updated_loan_amount, 2)
+        self.user_manager.save_data()
+
 
 
 class BankSystem:
