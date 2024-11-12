@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 
 class AdminInterface:
-    def init(self, master, user_manager, main_screen_callback):
+    def __init__(self, master, user_manager, main_screen_callback):
         self.master = master
         self.user_manager = user_manager
         self.main_screen_callback = main_screen_callback
