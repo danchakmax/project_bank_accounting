@@ -304,7 +304,7 @@ class BankSystem:
 
         self.user_manager = UserManager()
         self.user_interface = UserInterface(master, self.user_manager, self)
-        self.admin_interface = AdminInterface(self, self.user_manager)
+        self.admin_interface = AdminInterface(master, self.user_manager, self.init_main_screen)
 
         self.init_main_screen()
 
