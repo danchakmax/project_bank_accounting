@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
-
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 class AdminInterface:
     def __init__(self, master, user_manager, main_screen_callback):
         self.master = master
@@ -48,6 +50,12 @@ class AdminInterface:
         Button(self.admin_dashboard_frame, text="View All Accounts", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF',
                command=self.show_all_accounts).pack(pady=10)
 
+        Button(self.admin_dashboard_frame, text="Salary Distribution Chart", font=('Arial', 12),
+               command=self.salary_distribution_chart).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="Balance statistics", font=('Arial', 12),
+               command=self.balance_statistics).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="Export User Data to CSV", font=('Arial', 12),
+               command=self.export_user_data_to_csv).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
 
     def show_all_accounts(self):
@@ -71,3 +79,75 @@ class AdminInterface:
     def clear_screen(self):
         for widget in self.master.winfo_children():
             widget.pack_forget()
+
+    def salary_distribution_chart(self):
+        data = []
+        for phone, user_data in self.user_manager.users.items():
+            data.append({
+                "Phone": phone,
+                "Name": user_data.get("name"),
+                "Salary": user_data.get("salary", 0)
+            })
+
+        df = pd.DataFrame(data)
+
+        if df.empty:
+            messagebox.showerror("Error", "Немає даних про заробітні плати.")
+            return
+
+        salary_ranges = pd.cut(df['Salary'], bins=[0, 1000, 3000, 5000, 10000, 20000, np.inf], labels=[
+            '0-1000', '1000-3000', '3000-5000', '5000-10000', '10000-20000', '20000+'])
+
+        salary_distribution = salary_ranges.value_counts()
+
+        plt.figure(figsize=(8, 6))
+        salary_distribution.plot(kind='pie', autopct='%1.1f%%', startangle=90, colormap='tab10')
+        plt.title("Розподіл користувачів за рівнями заробітної плати")
+        plt.ylabel("")
+        plt.show()
+
+    def balance_statistics(self):
+        balances = np.array([user_data.get("balance", 0) for user_data in self.user_manager.users.values()])
+
+        if balances.size == 0:
+            messagebox.showerror("Error", "Немає даних про баланс користувачів.")
+            return
+
+        average_balance = np.mean(balances)
+        median_balance = np.median(balances)
+        std_dev_balance = np.std(balances)
+        min_balance = np.min(balances)
+        max_balance = np.max(balances)
+
+        report = (
+            f"Середній баланс: {average_balance:.2f}\n"
+            f"Медіанний баланс: {median_balance:.2f}\n"
+            f"Стандартне відхилення: {std_dev_balance:.2f}\n"
+            f"Мінімальний баланс: {min_balance:.2f}\n"
+            f"Максимальний баланс: {max_balance:.2f}"
+        )
+
+        messagebox.showinfo("Баланс Користувачів - Статистика", report)
+
+    def export_user_data_to_csv(self):
+        data = []
+        for phone, user_data in self.user_manager.users.items():
+            data.append({
+                "Phone": phone,
+                "Name": user_data.get("name", "N/A"),
+                "Balance": user_data.get("balance", 0),
+                "Loan Amount": user_data.get("loan_amount", 0),
+                "Salary": user_data.get("salary", 0),
+                "Age": user_data.get("age", "N/A")
+            })
+
+        if not data:
+            messagebox.showerror("Error", "Немає даних для експорту.")
+            return
+
+        df = pd.DataFrame(data)
+
+        file_path = "user_data_report.csv"
+        df.to_csv(file_path, index=False, encoding='utf-8-sig')
+
+        messagebox.showinfo("Success", f"Дані користувачів експортовані до файлу '{file_path}' успішно.")
