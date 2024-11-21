@@ -26,6 +26,22 @@ class UserManager:
             for user_data in self.users.values():
                 json.dump(user_data, file)
                 file.write("\n")
+    
+    def deposit(self, phone, amount):
+        if phone in self.users:
+            self.users[phone]["balance"] += amount
+            self.users[phone]["transactions"].append(f"Deposited: +{amount}")
+            self.save_data()
+            return True
+        return False
+
+    def withdraw(self, phone, amount):
+        if phone in self.users and self.users[phone]["balance"] >= amount:
+            self.users[phone]["balance"] -= amount
+            self.users[phone]["transactions"].append(f"Withdrew: -{amount}")
+            self.save_data()
+            return True
+        return False
 
 class UserInterface:
     def __init__(self, master, user_manager, bank_system):
@@ -243,6 +259,7 @@ class UserInterface:
             pady=10)
 
     def show_user_details(self):
+        self.clear_screen()
         if hasattr(self, 'user_details_frame'):
             self.user_details_frame.pack_forget()
 
@@ -255,7 +272,10 @@ class UserInterface:
               bg="#D3D3D3").pack(pady=5)
         Label(self.user_details_frame, text=f"Loan Amount: {self.current_user_data.get('loan_amount', 0):.2f}",
               font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
-
+        Button(self.user_details_frame, text="Deposit Money", font=('Arial', 12), bg='#FFDDC1',
+           command=self.show_deposit_screen).pack(pady=5)
+        Button(self.user_details_frame, text="Withdraw Money", font=('Arial', 12), bg='#FFDDC1',
+           command=self.show_withdraw_screen).pack(pady=5)
         Button(self.user_details_frame, text="Change Phone Number", font=('Arial', 12), bg='#FFDDC1',
                command=self.change_phone_number).pack(pady=5)
         Button(self.user_details_frame, text="Change PIN", font=('Arial', 12), bg='#FFDDC1',
@@ -294,7 +314,61 @@ class UserInterface:
     def clear_screen(self):
         for widget in self.master.winfo_children():
             widget.pack_forget()
+    
+    def show_deposit_screen(self):
+        self.clear_screen()
 
+        self.deposit_frame = Frame(self.master, bg="#FFFFFF")
+        self.deposit_frame.pack(pady=20)
+
+        Label(self.deposit_frame, text="Deposit Amount:", font=("Arial", 14), bg="#FFFFFF").grid(row=0, column=0, padx=10, pady=10)
+        self.deposit_amount_entry = Entry(self.deposit_frame, font=("Arial", 14))
+        self.deposit_amount_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        Button(self.deposit_frame, text="Deposit", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.deposit).grid(row=1, column=1, pady=10)
+        Button(self.deposit_frame, text="Back", font=('Arial', 12), command=self.show_user_details).grid(row=1, column=0, pady=10)
+
+    def deposit(self):
+        amount = self.deposit_amount_entry.get().strip()
+
+        if not amount.isdigit() or int(amount) <= 0:
+            messagebox.showerror("Error", "Please enter a valid amount to deposit!")
+            return
+
+        amount = int(amount)
+        if self.user_manager.deposit(self.current_user_data["phone"], amount):
+            messagebox.showinfo("Success", f"Successfully deposited {amount}!")
+            self.show_user_details()
+        else:
+            messagebox.showerror("Error", "Deposit failed!")
+
+    def show_withdraw_screen(self):
+        self.clear_screen()
+
+        self.withdraw_frame = Frame(self.master, bg="#FFFFFF")
+        self.withdraw_frame.pack(pady=20)
+
+        Label(self.withdraw_frame, text="Withdrawal Amount:", font=("Arial", 14), bg="#FFFFFF").grid(row=0, column=0, padx=10, pady=10)
+        self.withdraw_amount_entry = Entry(self.withdraw_frame, font=("Arial", 14))
+        self.withdraw_amount_entry.grid(row=0, column=1, padx=10, pady=10)
+
+        Button(self.withdraw_frame, text="Withdraw", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.withdraw).grid(row=1, column=1, pady=10)
+        Button(self.withdraw_frame, text="Back", font=('Arial', 12), command=self.show_user_details).grid(row=1, column=0, pady=10)
+
+    def withdraw(self):
+        amount = self.withdraw_amount_entry.get().strip()
+
+        if not amount.isdigit() or int(amount) <= 0:
+            messagebox.showerror("Error", "Please enter a valid amount to withdraw!")
+            return
+
+        amount = int(amount)
+        if self.user_manager.withdraw(self.current_user_data["phone"], amount):
+            messagebox.showinfo("Success", f"Successfully withdrew {amount}!")
+            self.show_user_details()
+        else:
+            messagebox.showerror("Error", "Insufficient balance or withdrawal failed!")
+    
 
 class BankSystem:
     def __init__(self, master):
