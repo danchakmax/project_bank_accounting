@@ -212,9 +212,32 @@ class UserInterface:
         self.change_password_frame.pack_forget()
         self.show_user_details()
 
+    def change_salary(self):
+        new_salary = simpledialog.askinteger("Change Salary", "Enter new salary:")
+
+        if new_salary is None:
+            return
+
+        if new_salary <= 0:
+            messagebox.showerror("Error", "Salary must be a positive number!")
+            return
+
+        self.current_user_data["salary"] = new_salary
+
+        self.current_user_data["max_loan_amount"] = new_salary
+
+        self.current_user_data["transactions"].append(f"Salary updated: {new_salary}")
+
+        self.save_data()
+
+        messagebox.showinfo("Success", f"Salary updated to {new_salary} successfully!")
+        self.show_user_details()
+
+
     def back_to_user_details(self):
         self.change_password_frame.pack_forget()
         self.show_user_details()
+
 
     def show_change_password(self):
         self.user_details_frame.pack_forget()
@@ -242,6 +265,7 @@ class UserInterface:
             column=0,
             pady=10)
 
+
     def show_user_details(self):
         if hasattr(self, 'user_details_frame'):
             self.user_details_frame.pack_forget()
@@ -258,9 +282,14 @@ class UserInterface:
 
         Button(self.user_details_frame, text="Change Phone Number", font=('Arial', 12), bg='#FFDDC1',
                command=self.change_phone_number).pack(pady=5)
+
         Button(self.user_details_frame, text="Change PIN", font=('Arial', 12), bg='#FFDDC1',
                command=self.show_change_password).pack(pady=5)
+
+        Button(self.user_details_frame, text="Change Salary",font=('Arial', 12), bg='#FFDDC1', command=self.change_salary).pack(pady=5)
+
         Button(self.user_details_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
+
 
     def show_create_account(self):
         self.clear_screen()
@@ -291,6 +320,7 @@ class UserInterface:
         Button(self.create_account_frame, text="Create Account", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.create_account).grid(row=6, column=1, pady=20)
         Button(self.create_account_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=6, column=0, pady=20)
 
+
     def clear_screen(self):
         for widget in self.master.winfo_children():
             widget.pack_forget()
@@ -308,6 +338,7 @@ class BankSystem:
 
         self.init_main_screen()
 
+
     def init_main_screen(self):
         self.clear_screen()
         self.main_screen_frame = Frame(self.master, bg="#FFFFFF", padx=20, pady=20)
@@ -322,9 +353,11 @@ class BankSystem:
         Button(self.main_screen_frame, text="Admin Login", font=('Arial', 14), bg='#FF5733', fg='#FFFFFF',
                command=self.admin_interface.show_admin_login).pack(pady=10)
 
+
     def clear_screen(self):
         for widget in self.master.winfo_children():
             widget.pack_forget()
+
 
 def main():
     root = Tk()
