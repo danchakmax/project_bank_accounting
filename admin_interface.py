@@ -9,7 +9,7 @@ class AdminInterface:
         self.user_manager = user_manager
         self.main_screen_callback = main_screen_callback
         self.master.title("Bank Management System")
-        self.master.geometry("500x500")
+        self.master.geometry("500x600")
 
 
     def show_admin_login(self):
@@ -59,6 +59,7 @@ class AdminInterface:
         Button(self.admin_dashboard_frame, text="Balance vs Age Chart", font=('Arial', 12), 
                command=self.balance_vs_age_chart).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Age Distribution Histogram", font=('Arial', 12), command=self.age_histogram).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="Credit Distribution Chart", font=('Arial', 12),command=self.credit_distribution_chart).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
 
     def show_all_accounts(self):
@@ -199,7 +200,7 @@ class AdminInterface:
 
         # Ensure age data is numeric and drop NaN values
         if 'Age' not in df or df['Age'].dropna().empty:
-            messagebox.showerror("Error", "Немає даних про вік користувачів.")
+            messagebox.showerror("Error", "No information about the age of Users.")
             return
 
         df['Age'] = pd.to_numeric(df['Age'], errors='coerce').dropna()
@@ -211,4 +212,30 @@ class AdminInterface:
         plt.xlabel("Age")
         plt.ylabel("Number of Users")
         plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.show()
+
+    def credit_distribution_chart(self):
+        # Підготовка даних
+        has_credit = 0
+        no_credit = 0
+
+        for user_data in self.user_manager.users.values():
+            if user_data.get("loan_amount", 0) > 0:
+                has_credit += 1
+            else:
+                no_credit += 1
+
+        if has_credit == 0 and no_credit == 0:
+            messagebox.showerror("Error", "No User credit data.")
+            return
+
+        # Дані для кругової діаграми
+        labels = ["Users with credits", "Users without credits"]
+        values = [has_credit, no_credit]
+        colors = ['#FF9999', '#66B3FF']
+
+        # Побудова кругової діаграми
+        plt.figure(figsize=(8, 6))
+        plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors, explode=(0.1, 0))
+        plt.title("Distribution of users according to availability of credits")
         plt.show()
