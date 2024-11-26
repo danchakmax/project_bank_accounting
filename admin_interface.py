@@ -99,10 +99,10 @@ class AdminInterface:
             messagebox.showerror("Error", "Немає даних про заробітні плати.")
             return
 
-        salary_ranges = pd.cut(df['Salary'], bins=[0, 1000, 3000, 5000, 10000, 20000, np.inf], labels=[
-            '0-1000', '1000-3000', '3000-5000', '5000-10000', '10000-20000', '20000+'])
+        salary_ranges = pd.cut(df['Salary'], bins=[0, 8000, 20000, 50000, 80000, np.inf], labels=[
+            '0-8000', '8000-20000', '20000-50000', '50000-80000', '80000+'])
 
-        salary_distribution = salary_ranges.value_counts()
+        salary_distribution = salary_ranges.value_counts().sort_index()
 
         plt.figure(figsize=(8, 6))
         salary_distribution.plot(kind='pie', autopct='%1.1f%%', startangle=90, colormap='tab10')

@@ -401,7 +401,6 @@ class UserInterface:
         self.show_user_details()
 
     def update_loan_interest(self):
-
         loan_amount = self.current_user_data.get("loan_amount", 0)
         if loan_amount <= 0:
             return
@@ -415,12 +414,11 @@ class UserInterface:
         days_since_start = (current_date - loan_start_date).days
 
         interest_rate = self.current_user_data.get("interest_rate", 1.01)
-        updated_loan_amount = loan_amount * (interest_rate, days_since_start)
+        updated_loan_amount = loan_amount * (interest_rate ** days_since_start)
 
         if is_overdue:
             penalty_rate = 1.1
             updated_loan_amount *= penalty_rate
-            overdue_days
             self.current_user_data["transactions"].append(f"Penalty added for {overdue_days} overdue days.")
 
         self.current_user_data["loan_amount"] = round(updated_loan_amount, 2)
