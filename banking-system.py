@@ -152,9 +152,9 @@ class UserInterface:
         self.login_pin_entry = Entry(self.login_frame, show="*", font=("Arial", 14))
         self.login_pin_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        Button(self.login_frame, text="Login", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.login).grid(
+        Button(self.login_frame, text="Login", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.login, width=20).grid(
             row=2, column=1, pady=10)
-        Button(self.login_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=2, column=0,
+        Button(self.login_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main, width=5,bg="#ec5353").grid(row=2, column=0,
                                                                                                      pady=10)
 
     def timestamp_decorator(action_description):
@@ -258,9 +258,9 @@ class UserInterface:
         self.confirm_new_pin_entry = Entry(self.change_password_frame, show="*", font=("Arial", 14))
         self.confirm_new_pin_entry.grid(row=1, column=1, padx=10, pady=10)
 
-        Button(self.change_password_frame, text="Save", font=('Arial', 12), bg='#C2E7B1', fg='#FFFFFF',
-               command=self.change_password).grid(row=2, column=1, pady=10)
-        Button(self.change_password_frame, text="Back", font=('Arial', 12), command=self.back_to_user_details).grid(
+        Button(self.change_password_frame, text="Save", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF',
+               command=self.change_password, width=20).grid(row=2, column=1, pady=10)
+        Button(self.change_password_frame, text="Back", font=('Arial', 12), bg='#ec5353', command=self.back_to_user_details, width=10).grid(
             row=2,
             column=0,
             pady=10)
@@ -281,20 +281,20 @@ class UserInterface:
               font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
 
         Button(self.user_details_frame, text="Change Phone Number", font=('Arial', 12), bg='#FFDDC1',
-               command=self.change_phone_number).pack(pady=5)
+               command=self.change_phone_number, width=20).pack(pady=5)
 
         Button(self.user_details_frame, text="Change PIN", font=('Arial', 12), bg='#FFDDC1',
-               command=self.show_change_password).pack(pady=5)
+               command=self.show_change_password, width=20).pack(pady=5)
 
-        Button(self.user_details_frame, text="Change Salary",font=('Arial', 12), bg='#FFDDC1', command=self.change_salary).pack(pady=5)
+        Button(self.user_details_frame, text="Change Salary",font=('Arial', 12), bg='#FFDDC1', command=self.change_salary, width=20).pack(pady=5)
 
-        Button(self.user_details_frame, text="Apply for Loan", font=('Arial', 12), bg='#FFDDC1', fg='#FFFFFF',
-               command=self.apply_for_loan).pack(pady=5)
+        Button(self.user_details_frame, text="Apply for Loan", font=('Arial', 12), bg='#FFDDC1',
+               command=self.apply_for_loan, width=20).pack(pady=5)
 
-        Button(self.user_details_frame, text="Repay Loan", font=('Arial', 12), bg='#FFDDC1', fg='#FFFFFF',
-               command=self.repay_loan).pack(pady=5)
+        Button(self.user_details_frame, text="Repay Loan", font=('Arial', 12), bg='#FFDDC1',
+               command=self.repay_loan, width=20).pack(pady=5)
 
-        Button(self.user_details_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
+        Button(self.user_details_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main, width=20, bg='#ec5353').pack(pady=10)
 
 
     def show_create_account(self):
@@ -323,8 +323,8 @@ class UserInterface:
         self.confirm_pin_entry = Entry(self.create_account_frame, show="*", font=('Arial', 12))
         self.confirm_pin_entry.grid(row=5, column=1, padx=10, pady=10)
 
-        Button(self.create_account_frame, text="Create Account", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.create_account).grid(row=6, column=1, pady=20)
-        Button(self.create_account_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=6, column=0, pady=20)
+        Button(self.create_account_frame, text="Create Account", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.create_account, width=20).grid(row=6, column=1, pady=20)
+        Button(self.create_account_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main, width=5,bg='#ec5353').grid(row=6, column=0, pady=20)
 
     def clear_screen(self):
         for widget in self.master.winfo_children():
@@ -447,11 +447,11 @@ class BankSystem:
         Label(self.main_screen_frame, text="Bank Management System", font=("Arial", 16), bg="#FFFFFF").pack(pady=10)
 
         Button(self.main_screen_frame, text="Create Account", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
-               command=self.user_interface.show_create_account).pack(pady=10)
+               command=self.user_interface.show_create_account, width=20).pack(pady=10)
         Button(self.main_screen_frame, text="Login", font=('Arial', 14), bg='#4CAF50', fg='#FFFFFF',
-               command=self.user_interface.show_login).pack(pady=10)
+               command=self.user_interface.show_login, width=20).pack(pady=10)
         Button(self.main_screen_frame, text="Admin Login", font=('Arial', 14), bg='#FF5733', fg='#FFFFFF',
-               command=self.admin_interface.show_admin_login).pack(pady=10)
+               command=self.admin_interface.show_admin_login, width=20).pack(pady=10)
 
 
     def clear_screen(self):

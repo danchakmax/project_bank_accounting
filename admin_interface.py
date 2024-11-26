@@ -16,7 +16,7 @@ class AdminInterface:
         self.clear_screen()
 
         self.admin_login_frame = Frame(self.master, bg="#FFFFFF")
-        self.admin_login_frame.pack(pady=20)
+        self.admin_login_frame.pack(pady=10)
 
         Label(self.admin_login_frame, text="Admin PIN:", font=("Arial", 14), bg="#FFFFFF").grid(row=0, column=0,
                                                                                                 padx=10, pady=10)
@@ -24,8 +24,8 @@ class AdminInterface:
         self.admin_pin_entry.grid(row=0, column=1, padx=10, pady=10)
 
         Button(self.admin_login_frame, text="Login", font=('Arial', 12), bg='#FF5733', fg='#FFFFFF',
-               command=self.admin_login).grid(row=1, column=1, pady=10)
-        Button(self.admin_login_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).grid(row=1,
+               command=self.admin_login, width=20).grid(row=1, column=1, pady=10)
+        Button(self.admin_login_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main, width=10, bg='#ec5353').grid(row=1,
                                                                                               column=0, pady=10)
         
     def admin_login(self):
@@ -47,20 +47,20 @@ class AdminInterface:
 
         Label(self.admin_dashboard_frame, text="Admin Dashboard", font=("Arial", 16), bg="#FFFFFF").pack(pady=10)
 
-        Button(self.admin_dashboard_frame, text="View All Accounts", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF',
-               command=self.show_all_accounts).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="View All Accounts", font=('Arial', 12),
+               command=self.show_all_accounts,width=25).pack(pady=10)
 
         Button(self.admin_dashboard_frame, text="Salary Distribution Chart", font=('Arial', 12),
-               command=self.salary_distribution_chart).pack(pady=10)
+               command=self.salary_distribution_chart,width=25).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Balance statistics", font=('Arial', 12),
-               command=self.balance_statistics).pack(pady=10)
+               command=self.balance_statistics,width=25).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Export User Data to CSV", font=('Arial', 12),
-               command=self.export_user_data_to_csv).pack(pady=10)
+               command=self.export_user_data_to_csv,width=25).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Balance vs Age Chart", font=('Arial', 12), 
-               command=self.balance_vs_age_chart).pack(pady=10)
-        Button(self.admin_dashboard_frame, text="Age Distribution Histogram", font=('Arial', 12), command=self.age_histogram).pack(pady=10)
-        Button(self.admin_dashboard_frame, text="Credit Distribution Chart", font=('Arial', 12),command=self.credit_distribution_chart).pack(pady=10)
-        Button(self.admin_dashboard_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
+               command=self.balance_vs_age_chart,width=25).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="Age Distribution Histogram", font=('Arial', 12), command=self.age_histogram,width=25).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="Credit Distribution Chart", font=('Arial', 12),command=self.credit_distribution_chart,width=25).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="Back", font=('Arial', 12), bg="#ec5353", command=self.go_back_to_main,width=25).pack(pady=10)
 
     def show_all_accounts(self):
         self.clear_screen()
@@ -74,7 +74,7 @@ class AdminInterface:
             Label(self.admin_accounts_frame, text=f"Phone: {phone}, Name: {data['name']}, Balance: {data['balance']}",
                   font=("Arial", 12), bg="#FFFFFF").pack(pady=5)
 
-        Button(self.admin_accounts_frame, text="Back", font=('Arial', 12), command=self.show_admin_dashboard).pack(pady=10)
+        Button(self.admin_accounts_frame, text="Back", font=('Arial', 12), command=self.show_admin_dashboard, bg='#ec5353', width=20).pack(pady=10)
 
     def go_back_to_main(self):
         self.clear_screen()
