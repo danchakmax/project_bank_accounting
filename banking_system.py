@@ -269,6 +269,7 @@ class UserInterface:
     def show_user_details(self):
         if hasattr(self, 'user_details_frame'):
             self.user_details_frame.pack_forget()
+        self.update_loan_interest()
 
         self.user_details_frame = Frame(self.master, bg="#D3D3D3", padx=20, pady=20)
         self.user_details_frame.pack(pady=20)
@@ -420,7 +421,7 @@ class UserInterface:
 
         if is_overdue:
             penalty_rate = 1.1
-            updated_loan_amount *= penalty_rate
+            updated_loan_amount *= (penalty_rate ** overdue_days)
             self.current_user_data["transactions"].append(f"Penalty added for {overdue_days} overdue days.")
 
         self.current_user_data["loan_amount"] = round(updated_loan_amount, 2)
