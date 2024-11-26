@@ -56,6 +56,8 @@ class AdminInterface:
                command=self.balance_statistics).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Export User Data to CSV", font=('Arial', 12),
                command=self.export_user_data_to_csv).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="Balance vs Age Chart", font=('Arial', 12), 
+               command=self.balance_vs_age_chart).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
 
     def show_all_accounts(self):
@@ -151,3 +153,34 @@ class AdminInterface:
         df.to_csv(file_path, index=False, encoding='utf-8-sig')
 
         messagebox.showinfo("Success", f"Дані користувачів експортовані до файлу '{file_path}' успішно.")
+
+    def balance_vs_age_chart(self):
+        data = []
+        for phone, user_data in self.user_manager.users.items():
+            if "age" in user_data and "balance" in user_data:
+                data.append({
+                    "Age": user_data["age"],
+                    "Balance": user_data["balance"]
+                })
+
+        if not data:
+            messagebox.showerror("Error", "No data available to generate the chart.")
+            return
+
+        df = pd.DataFrame(data)
+
+        age_bins = [18, 25, 35, 50, 65, 100]
+        labels = ['18-25', '26-35', '36-50', '51-65', '65+']
+        df["Age Group"] = pd.cut(df["Age"], bins=age_bins, labels=labels)
+
+        avg_balance = df.groupby("Age Group")["Balance"].mean()
+
+        plt.figure(figsize=(10, 6))
+        avg_balance.plot(kind="bar", color=['blue', 'green', 'orange', 'purple', 'red'], alpha=0.7, edgecolor='black')
+
+        plt.title("Average Balance by Age Groups", fontsize=14, fontweight='bold')
+        plt.xlabel("Age Groups", fontsize=12)
+        plt.ylabel("Average Balance", fontsize=12)
+        plt.xticks(rotation=45)
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.show()
