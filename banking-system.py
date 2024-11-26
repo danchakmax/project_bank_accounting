@@ -294,6 +294,8 @@ class UserInterface:
         Button(self.user_details_frame, text="Repay Loan", font=('Arial', 12), bg='#FFDDC1',
                command=self.repay_loan, width=20).pack(pady=5)
 
+        Button(self.user_details_frame, text="View Transactions", font=('Arial', 12), bg='#FFDDC1', command=self.view_transaction_log,width=20).pack(pady=5)
+
         Button(self.user_details_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main, width=20, bg='#ec5353').pack(pady=10)
 
 
@@ -425,6 +427,29 @@ class UserInterface:
 
         self.current_user_data["loan_amount"] = round(updated_loan_amount, 2)
         self.user_manager.save_data()
+
+    def view_transaction_log(self):
+
+        transaction_log_window = Toplevel(self.master)
+        transaction_log_window.title("Transaction Log")
+
+        scrollbar_y = Scrollbar(transaction_log_window, orient=VERTICAL)
+        scrollbar_y.pack(side=RIGHT, fill=Y)
+        scrollbar_x = Scrollbar(transaction_log_window, orient=HORIZONTAL)
+        scrollbar_x.pack(side=BOTTOM, fill=X)
+
+        transaction_listbox = Listbox(transaction_log_window, width=60, height=20, yscrollcommand=scrollbar_y.set,
+                                          xscrollcommand=scrollbar_x.set)
+        transaction_listbox.pack(padx=10, pady=10)
+
+        scrollbar_y.config(command=transaction_listbox.yview)
+        scrollbar_x.config(command=transaction_listbox.xview)
+
+        for transaction in self.current_user_data["transactions"]:
+            transaction_listbox.insert(END, transaction)
+
+
+
 
 class BankSystem:
     def __init__(self, master):
