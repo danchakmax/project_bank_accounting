@@ -396,7 +396,6 @@ class UserInterface:
         self.user_manager.save_data()
 
 
-
 class BankSystem:
     def __init__(self, master):
         self.master = master
