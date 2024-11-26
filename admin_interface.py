@@ -58,6 +58,7 @@ class AdminInterface:
                command=self.export_user_data_to_csv).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Balance vs Age Chart", font=('Arial', 12), 
                command=self.balance_vs_age_chart).pack(pady=10)
+        Button(self.admin_dashboard_frame, text="Age Distribution Histogram", font=('Arial', 12), command=self.age_histogram).pack(pady=10)
         Button(self.admin_dashboard_frame, text="Back", font=('Arial', 12), command=self.go_back_to_main).pack(pady=10)
 
     def show_all_accounts(self):
@@ -182,5 +183,32 @@ class AdminInterface:
         plt.xlabel("Age Groups", fontsize=12)
         plt.ylabel("Average Balance", fontsize=12)
         plt.xticks(rotation=45)
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        plt.show()
+
+    def age_histogram(self):
+        data = []
+        for phone, user_data in self.user_manager.users.items():
+            data.append({
+                "Phone": phone,
+                "Name": user_data.get("name"),
+                "Age": user_data.get("age", None)
+            })
+
+        df = pd.DataFrame(data)
+
+        # Ensure age data is numeric and drop NaN values
+        if 'Age' not in df or df['Age'].dropna().empty:
+            messagebox.showerror("Error", "Немає даних про вік користувачів.")
+            return
+
+        df['Age'] = pd.to_numeric(df['Age'], errors='coerce').dropna()
+
+        plt.figure(figsize=(8, 6))
+        plt.hist(df['Age'], bins=range(int(df['Age'].min()), int(df['Age'].max()) + 2), color='skyblue',
+                 edgecolor='black')
+        plt.title("Histogram of User age")
+        plt.xlabel("Age")
+        plt.ylabel("Number of Users")
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.show()
