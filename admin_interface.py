@@ -198,7 +198,6 @@ class AdminInterface:
 
         df = pd.DataFrame(data)
 
-        # Ensure age data is numeric and drop NaN values
         if 'Age' not in df or df['Age'].dropna().empty:
             messagebox.showerror("Error", "No information about the age of Users.")
             return
@@ -215,7 +214,6 @@ class AdminInterface:
         plt.show()
 
     def credit_distribution_chart(self):
-        # Підготовка даних
         has_credit = 0
         no_credit = 0
 
@@ -229,12 +227,10 @@ class AdminInterface:
             messagebox.showerror("Error", "No User credit data.")
             return
 
-        # Дані для кругової діаграми
         labels = ["Users with credits", "Users without credits"]
         values = [has_credit, no_credit]
         colors = ['#FF9999', '#66B3FF']
 
-        # Побудова кругової діаграми
         plt.figure(figsize=(8, 6))
         plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors, explode=(0.1, 0))
         plt.title("Distribution of users according to availability of credits")

@@ -280,6 +280,11 @@ class UserInterface:
               bg="#D3D3D3").pack(pady=5)
         Label(self.user_details_frame, text=f"Loan Amount: {self.current_user_data.get('loan_amount', 0):.2f}",
               font=('Arial', 14), bg="#D3D3D3").pack(pady=5)
+        Button(self.user_details_frame, text="Replenishment", font=('Arial', 12), bg='#FFDDC1',
+               command=self.replenishment, width=20).pack(pady=5)
+
+        Button(self.user_details_frame, text="Withdraw", font=('Arial', 12), bg='#FFDDC1',
+               command=self.withdraw, width=20).pack(pady=5)
 
         Button(self.user_details_frame, text="Change Phone Number", font=('Arial', 12), bg='#FFDDC1',
                command=self.change_phone_number, width=20).pack(pady=5)
@@ -426,6 +431,29 @@ class UserInterface:
 
         self.current_user_data["loan_amount"] = round(updated_loan_amount, 2)
         self.user_manager.save_data()
+
+    @timestamp_decorator("Replenishment made")
+    def replenishment(self):
+        amount = simpledialog.askinteger("Deposit", "Enter amount:")
+        if amount and amount > 0:
+            self.current_user_data["balance"] += amount
+            self.current_user_data["transactions"].append(f"Deposit: +{amount}")
+            self.user_manager.save_data()
+            messagebox.showinfo("Success", f"Deposited {amount} successfully!")
+            self.show_user_details()
+
+    @timestamp_decorator("Withdrawal made")
+    def withdraw(self):
+        amount = simpledialog.askinteger("Withdraw", "Enter amount:")
+        if amount and amount > 0 and amount <= self.current_user_data["balance"]:
+            self.current_user_data["balance"] -= amount
+            self.current_user_data["transactions"].append(f"Withdraw: -{amount}")
+            self.user_manager.save_data()
+
+            messagebox.showinfo("Success", f"Withdrew {amount} successfully!")
+            self.show_user_details()
+        else:
+            messagebox.showerror("Error", "Invalid amount or insufficient funds!")
 
     def view_transaction_log(self):
 
