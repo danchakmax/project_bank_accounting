@@ -367,6 +367,7 @@ class UserInterface:
         Button(self.replenishment_frame, text="Deposit", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.replenishment).grid(row=1, column=1, pady=10)
         Button(self.replenishment_frame, text="Back", font=('Arial', 12), command=self.show_user_details).grid(row=1, column=0, pady=10)
 
+    @timestamp_decorator("Replenishment made")
     def replenishment(self):
         amount = self.replenishment_amount_entry.get().strip()
 
@@ -394,6 +395,7 @@ class UserInterface:
         Button(self.withdraw_frame, text="Withdraw", font=('Arial', 12), bg='#4CAF50', fg='#FFFFFF', command=self.withdraw).grid(row=1, column=1, pady=10)
         Button(self.withdraw_frame, text="Back", font=('Arial', 12), command=self.show_user_details).grid(row=1, column=0, pady=10)
 
+    @timestamp_decorator("Withdrawal made")
     def withdraw(self):
         amount = self.withdraw_amount_entry.get().strip()
 
